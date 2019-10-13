@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<link rel="shortcut icon" href="#" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>GETH</title>
+	<link rel="stylesheet" href="imageAuthor.css">
+	<script type="text/javascript" language="javascript" src="jquery.js"></script>
+	<script type="text/javascript" language="javascript" src="json2.js"></script>
+	<script type="text/javascript" language="javascript" src="socket-web.js"></script>
+</head>
+
+<body>
+	<div style="float: left;height:425px;display:flex;">
+		<div>
+			<p>url: <code id="url">...</code> 房间名: <code id="room"></code></p>
+			<p>记录：</p>
+			<div class="viewlist" id="viewlist" style="cursor:no-drop;">
+			</div>
+			<div class="chuangkou"><input type="button" name="btn" value="提交" />
+				<!-- 配置后端接口选项 -->
+				<select name="xuan" id="xuan">
+					<option value="message">message</option>
+          <option value="create or join">create or join</option>
+          <option value="leaveRoom">leaveRoom</option>
+          <option value="getRooms">getRooms</option>
+          <option value="io">io</option>
+				</select>
+				<select name="condition" id="condition">
+					<option value="all">all</option>
+					<option value="del">del</option>
+					<option value="other">other</option>
+				</select>
+				<div contenteditable="true" name="text" id="menulist" class="menulist">
+        </div>
+        <div id="PicTure" style="display:none;">
+          <a href="javascript:;" class="input_style_file_upload" title="拖拽图片上传">
+            <input onchange="getNextElement(this).src=(window.URL||window.webkitURL).createObjectURL(this.files[0])" type="file" name="fileName">
+            <img src="../upload/none.gif" onclick="getPreElement(this).click()" name="preview" height="100%" width="100%"/>
+          </a>
+        </div>
+			</div>
+		</div>
+		<div>
+			<p>房间列表:</p>
+			<ul class="viewlist" style="background-color: darkgrey;" id="roomList">
+			</ul><p>座位:</p>
+			<ul class="viewlist" style="background-color: darkkhaki;height: 150px;" id="roomTable">
+			</ul>
+    </div>
+    <div>
+      <p>主网用户</p>
+      <ul class="viewlist" style="background-color:gainsboro;height: 500px;" id="usersList">
+      </ul>
+    </div>
+	</div>
+</body>
+<script>
+
+	var oText = $("div[name='text']"),data= { d: "all" }
+	//发送消息的按钮，传送给服务器的某个房间
+	$("input[type='button'][name='btn']").on('click', function () {
+		if ("condition".Id().value === "del") 'room'.Id().innerHTML = ""
+		data.v="url".Id().innerHTML.substr(0,5)+":= "+oText.html();data.d= 'condition'.Id().value;
+    if('room'.Id().innerHTML) data.r = "room".Id().innerHTML
+    switch('xuan'.Id().value){
+      case "message": so.send(data) ; break;
+      case "create or join": so.emit("create or join", oText.html().substr(0, 10)) ; break;
+      case "leaveRoom": so.emit("leaveRoom", 'room'.Id().innerHTML); break;
+      default: so.emit(String('xuan'.Id().value));
+    }
+
+		if (!oText.html()) return;
+		oText.html("");
+	})
+
+
+	var so = io.connect("ws://127.0.0.1:2013/");
+	//连入主网时候，主网会分配一个url作为客户端的id
+  so.on("login", function (v) {
+    'url'.Id().innerHTML = v; data.id=v;
+    so.emit("getUsers")
+  })
+  so.on("getUsers", function (v) {listParse('usersList',v)})
+
+  //接收其他玩家进入主网的信息
+  so.on("io",function(v){objParse('usersList', v)})
+	//接收消息
+	so.on("message", function (mes) {
+    objParse('viewlist', mes.v)
+	});
+	//加入房间
+	so.on("joined", function (v) {
+    'room'.Id().innerHTML = v.room;
+    console.log(v)
+      objParse('roomTable', v.id);
+      if(v.bool)objParse('roomList', v.room, true);
+  })
+  so.on("getRooms",function (v){console.log(v)
+    listParse('roomList', v,true)
+  })
+  so.on("getRoomPlayers", function (v) {
+    listParse('roomTable', v)
+  })
+  so.on("playerCome", function (v) {
+    objParse('roomTable', v)
+  })
+  so.on("ready", function () {
+    console.log("所有人都就位了。")
+  })
+  so.on("leaveRoom",function(v){
+    if("url".Id().innerHTML===v)"room".Id().innerHTML= ""
+  })
+	//创建房间
+  so.on("created", function (v) {
+    objParse('roomList', v, true);
+
+  })
+  so.on("destroyRoom",function(v){
+      delOne("roomList".Id().childNodes, v)
+  })
+  so.on("full", function () {alert("房间已满");})
+	so.on("log", function (da) {console.log("log" + da);})
+  //成功连接的时候可以执行的操作
+  so.on("connect", function () {
+      so.emit("getRooms")
+  })
+
+  so.on("exit",function(v){
+    delOne("usersList".Id().childNodes,v)
+  })
+  function delOne(list,v){
+    for (i in list) {
+      if (list[i].innerHTML === v) {
+        list[i].parentNode.removeChild(list[i])
+      }
+    }
+  }
+  function objParse(parent,v,b){
+      var li = document.createElement("li"); li.innerHTML = v;
+      li.style = "background:#fff;border:1px solid #ccc";
+      if (b)
+      li.addEventListener("dblclick", function () {
+        so.emit("create or join", v)
+      })
+      li.addIn(parent.Id());
+
+  }
+  function listParse(parent,v,b) {
+    parent = parent.Id(); parent.innerHTML = "";
+    for (i in v) {
+      var li = document.createElement("li"); li.innerHTML = v[i];
+      li.style = "background:#fff;border:1px solid #ccc";
+      if(b)
+        li.addEventListener("dblclick", function () {
+          so.emit("create or join", v[i])
+        })
+      li.addIn(parent);
+    }
+  }
+	function handleFiles(files) {
+		for (var i = 0; i < files.length; i++) {
+			var file = files[i];
+			var img = 'PicTure'.Id().getElementsByTagName("a")[0].cloneNode(true),
+				parent = 'menulist'.Id()
+			if (parent.firstChild) {
+				parent.insertBefore(img, parent.firstChild);
+			} else {
+				parent.appendChild(img);
+			} img = img.getElementsByTagName("img")[0];
+			img.src = (window.URL || window.webkitURL).createObjectURL(file);
+		}
+	}
+	var reader = new FileReader(), fil = 'menulist'.Id();
+	fil.addEventListener('dragover', function (ev) {
+		ev.preventDefault();
+	}, false)
+	fil.addEventListener('drop', function (ev) {
+		ev.stopPropagation();
+		ev.preventDefault();
+		handleFiles(ev.dataTransfer.files);
+	}, false)
+</script>
+
+</html>

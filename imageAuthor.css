@@ -1,0 +1,96 @@
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td {padding:0;margin:0}
+table {border-collapse:collapse;border-spacing:0}fieldset,img {border:0}
+address,caption,cite,code,dfn,em,strong,th,var {font-weight:normal;font-style:normal}
+ol,ul {list-style:none}caption,th {text-align:left}h1,h2,h3,h4,h5,h6{font-weight:normal;font-size:100%}
+.wbk{width:240px;height:200px;border-radius:7px;border:1px solid #ddd;z-index:4;background:#FFF;margin-left:-257px;margin-top:-173px;padding:5px 5px 10px 5px}
+.wbk .div{width:95%;overflow-y:auto}
+.wbk b{cursor:pointer;color:#585858;padding-top:3px;border-radius:6px;margin:0px 1px 0px 2px;width:21px;height:15px;display:inline-block;border:1px;border-bottom:0px;border-color:#ccc;border-style:solid;text-indent:6px}
+.wbk span{background-size:contain;height:24px;min-width:24px;max-width:24px;cursor:pointer;text-align:center;border-radius:4px;margin:0px 2px 2px 1px;font-size:11px;display:inline-block;border:1px solid #ccc;word-break:break-all;overflow:hidden;text-overflow:ellipsis;word-wrap:break-word}
+.wbk .lshow{position:absolute;height:181px;border-top:1px solid #ccc;padding-top:5px;display:block}
+.wbk .lhide{position:absolute;height:181px;border-top:1px solid #ccc;padding-top:5px;display:none}
+.wbk .inner{background-color:#FFF;width:10px;height:10px;position:absolute;top:179px;left:245px;transform:rotate(45deg);border-right:1px #ddd solid;border-top:1px #ddd solid}
+/*修改的是文件上传的按钮的样式*/
+.wbk div::-webkit-scrollbar{width:5px;height:6px}
+.wbk div::-webkit-scrollbar-track{background:#f6f6f6;border-radius:2px;}
+.wbk div::-webkit-scrollbar-thumb{background:#aaa;border-radius:2px;}
+.wbk div::-webkit-scrollbar-thumb:hover{background:#747474;}
+.wbk div::-webkit-scrollbar-corner{background:#f6f6f6;}
+.input_style_file_upload {
+    padding:4px 10px;
+    height:210px;
+    line-height:20px;
+    position:relative;
+    width:240px;
+    cursor:pointer;
+    color:#888;
+   /* background:#fafafa;*/
+    border:1px solid #ddd;
+    border-radius:4px;
+    overflow:hidden;
+    display:block;
+    zoom:1
+}
+
+.input_style_file_upload  input {
+    position:absolute;
+    font-size:100px;
+    right:0;
+    top:0;
+    opacity:0;
+    filter:alpha(opacity=0);
+    cursor:pointer
+}
+
+.input_style_file_upload span{
+     display:block;
+     /*font-size:30px;*/
+     font-size:40px;
+     position:absolute;
+     left:50%;
+     top:50%;
+     text-align:center;
+     transform:translate(-50%,-50%);
+}
+.input_style_file_upload span p{
+     font-size:16px;
+     margin-top:10px;
+}
+
+.input_style_file_upload:hover {
+    border-color:#ccc;
+    text-decoration:none;
+    background:#f5f5f5;
+
+}
+.chuangkou {
+    position: relative;
+    width: 400px;
+    height: 200px;
+}
+
+.menulist {
+    margin: 0;
+    -webkit-user-select: auto;
+    overflow-y: hidden;
+    overflow: auto;
+    font: normal 14px Verdana;
+    background: #fff;
+    border: #333 1px solid;
+    padding: 2px 4px 0;
+    width: 400px;
+    height: 160px;
+    cursor: text;
+}
+
+.viewlist {
+    margin: 0;
+    overflow-y: hidden;
+    overflow: auto;
+    font: normal 14px Verdana;
+    background: #fff;
+    border: #333 1px solid;
+    padding: 2px 4px 0;
+    width: 400px;
+    height: 350px;
+    cursor: text;
+}

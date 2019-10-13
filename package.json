@@ -1,0 +1,18 @@
+{
+  "server": "live-server ./ --port=2013",
+  "name": "socketio",
+  "version": "1.0.0",
+  "description": "socketweb",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Asciphx",
+  "license": "ISC",
+  "dependencies": {
+    "http": "0.0.0",
+    "node-static": "^0.7.11",
+    "socket.io": "^2.3.0",
+    "underscore": "^1.9.1"
+  }
+}
