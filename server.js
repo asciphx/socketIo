@@ -63,7 +63,7 @@ io.sockets.on('connection', (socket) => {
     var ifaces = o.networkInterfaces();
     for (dev in ifaces) {
       ifaces[dev].forEach(function (details) {
-        if (details.family === 'IPv4') {
+        if (details.family === 'IPv4' && details.address !== '127.0.0.1') {
           socket.emit('IPv4', details.address);
         }
       });
