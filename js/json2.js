@@ -7,13 +7,100 @@ if (typeof JSON !== 'object') {JSON = {};}
    if (typeof JSON.stringify !== 'function') {JSON.stringify = function (value, replacer, space) { var i;gap = '';indent = '';if (typeof space === 'number') {for (i = 0; i < space; i += 1) {indent += ' ';}}else if (typeof space === 'string') {indent = space;}rep = replacer;if (replacer && typeof replacer !== 'function' && (typeof replacer !== 'object' || typeof replacer.length !== 'number')) {throw new Error('JSON.stringify');} return str('', {'': value});};}
    if (typeof JSON.parse !== 'function') {JSON.parse = function (text, reviver) { var j;function walk(holder, key) {var k, v, value = holder[key];if (value && typeof value === 'object') {for (k in value) {if (Object.prototype.hasOwnProperty.call(value, k)) {v = walk(value, k);if (v !== undefined) {value[k] = v;}else{delete value[k];}}}}return reviver.call(holder, key, value);}text = String(text);cx.lastIndex = 0; if (cx.test(text)) {text = text.replace(cx, function (a) {return '\\u' +('0000' + a.charCodeAt(0).toString(16)).slice(-4);});}if (/^[\],:{}\s]*$/ .test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {j = eval('(' + text + ')');return typeof reviver === 'function' ? walk({'': j}, ''): j; } throw new SyntaxError('JSON.parse');};}
 }());
-String.prototype.Id=function(){
-    return document.getElementById(this);
-}
+String.prototype.Id=function(){return document.getElementById(this);}
 Element.prototype.addIn = function (parent) {
     if (parent.firstChild) {
         parent.insertBefore(this, parent.firstChild);
     } else {
         parent.appendChild(this);
     }
+}/* new Date().pattern("yyyy-MM-dd hh:mm:ss.S") ==> 2019-08-02 08:09:04.423 
+* new Date().pattern("yyyy-MM-dd EE hh:mm:ss") ==> 2019-08-10 周六 08:09:04       
+* new Date().pattern("yyyy-MM-dd EEE hh:mm:ss") ==> 2019-08-10 星期六 08:09:04       
+* 其他格式 MM/dd/yyyy HH  MM/dd/yyyy */          
+Date.prototype.pattern=function(fmt) { 
+   var o = {"M+" : this.getMonth()+1,"d+" : this.getDate(),
+   "h+" : this.getHours()%12 === 0 ? 12 : this.getHours()%12,
+   "H+" : this.getHours(),"m+" : this.getMinutes(),
+   "s+" : this.getSeconds(),"q+" : Math.floor((this.getMonth()+3)/3),
+   "S" : this.getMilliseconds()};
+   var week = {"0" : "/u65e5","1" : "/u4e00","2" : "/u4e8c",
+   "3" : "/u4e09","4" : "/u56db","5" : "/u4e94","6" : "/u516d"};
+   if(/(y+)/.test(fmt)){fmt=fmt.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));}
+   if(/(E+)/.test(fmt)){fmt=fmt.replace(RegExp.$1,((RegExp.$1.length>1) ?
+       (RegExp.$1.length>2 ? "/u661f/u671f" : "/u5468") : "")
+       +week[this.getDay()+""]);}
+   for(var k in o){
+       if(new RegExp("("+ k +")").test(fmt)){
+           fmt = fmt.replace(RegExp.$1, (RegExp.$1.length===1) ?
+           (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+       }
+   }return fmt;
 }
+Element.prototype.rcss=function(a,b){
+   if(a===''){
+       eval('var s = new RegExp(/\\b'+b+'\\b/)');
+       if(!s.test(this.className)){
+           this.className=this.className.trim()+' '+b;
+       }
+   }else{
+       eval('var s=this.className.replace(/\\b'+a+'\\b/g,b)');
+       this.className=s.trim();
+   }
+   return this;
+}
+HTMLCollection.prototype.each=NodeList.prototype.each=function(f){
+   for(var i=0,l=this.length;i<l;i++){
+       f(this[i],i,this);
+   }
+   return this;
+}
+HTMLCollection.prototype.rcss=NodeList.prototype.rcss=function(a,b){
+   this.each(function(t){t.rcss(a,b);});return this;
+}
+NodeList.prototype.del=function(){
+   this.each(function(t){t.del();});
+}
+String.prototype.trim=function(){return this.replace(/(^\s+)|(\s+$)/,'')};
+String.prototype.id=function(){return document.getElementById(this)};
+String.prototype.url=function(){return this.replace(/(^(http|https):\/\/)?((\w+\.)+|(\w+))(\w+)(\.|\:)?(\w+)\/{1}/g,'')};
+String.prototype.dateForNode=function(){return this.replace(/T(\d+):(\d+):(\d+)\.(\d+)Z/, "")};
+String.prototype.cookieToJson=function(){return this.replace(/\"{/g,"{").replace(/\}"/g,"}").replace(/\\/g,"")};
+String.prototype.J2T=function(){return this.replace(/(\\|\\'|\\"|\n)/g,"\\\$1")};
+String.prototype.getLast=function(f){return this.substring(this.lastIndexOf(f) + 1, str.length);};
+Array.prototype.unique=function(){
+	var r = [];var obj = {};
+	for (var i=0,l=this.length; i<l; i++) {
+		var item=this[i];
+        if (!obj[item]) {
+			r.push(item);
+            obj[item] = 1;
+		}
+	}
+    return r;
+};
+Element.prototype.del=function(){this.parentNode.removeChild(this)};
+Element.prototype.first=function(){return this.firstElementChild ? this.firstElementChild : this.firstChild};
+Element.prototype.last=function(){return this.lastElementChild ? this.lastElementChild : this.lastChild};
+Element.prototype.setCenter=function(){
+	this.style.left=(document.documentElement.clientWidth-this.offsetWidth) / 2+"px";
+	this.style.top=(document.documentElement.clientHeight-this.offsetHeight) / 2+"px";
+};
+Element.prototype.getNext=function(){
+	if(!this.nextSibling) return null;  
+	var nextNode = this.nextSibling;  
+	if(nextNode.nodeType == 1){  
+		return nextNode;  
+	}
+	return this.getNext(this.nextSibling);  
+};
+Element.prototype.getPre=function(){
+	if(!this.previousSibling) return null;  
+	var preNode = this.previousSibling;  
+	if(preNode.nodeType == 1){  
+		return preNode;  
+	}
+	return this.getPre(this.previousSibling);  
+};
+Element.prototype.prev=function(){return this.previousElementSibling||this.previousSibling;}
+Element.prototype.next=function(){return this.nextElementSibling||this.nextSibling;}
