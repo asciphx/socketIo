@@ -37,70 +37,17 @@ Date.prototype.pattern=function(fmt) {
        }
    }return fmt;
 }
-Element.prototype.rcss=function(a,b){
-   if(a===''){
-       eval('var s = new RegExp(/\\b'+b+'\\b/)');
-       if(!s.test(this.className)){
-           this.className=this.className.trim()+' '+b;
-       }
-   }else{
-       eval('var s=this.className.replace(/\\b'+a+'\\b/g,b)');
-       this.className=s.trim();
-   }
-   return this;
-}
-HTMLCollection.prototype.each=NodeList.prototype.each=function(f){
-   for(var i=0,l=this.length;i<l;i++){
-       f(this[i],i,this);
-   }
-   return this;
-}
-HTMLCollection.prototype.rcss=NodeList.prototype.rcss=function(a,b){
-   this.each(function(t){t.rcss(a,b);});return this;
-}
-NodeList.prototype.del=function(){
-   this.each(function(t){t.del();});
-}
 String.prototype.trim=function(){return this.replace(/(^\s+)|(\s+$)/,'')};
 String.prototype.id=function(){return document.getElementById(this)};
 String.prototype.url=function(){return this.replace(/(^(http|https):\/\/)?((\w+\.)+|(\w+))(\w+)(\.|\:)?(\w+)\/{1}/g,'')};
-String.prototype.dateForNode=function(){return this.replace(/T(\d+):(\d+):(\d+)\.(\d+)Z/, "")};
-String.prototype.cookieToJson=function(){return this.replace(/\"{/g,"{").replace(/\}"/g,"}").replace(/\\/g,"")};
 String.prototype.J2T=function(){return this.replace(/(\\|\\'|\\"|\n)/g,"\\\$1")};
 String.prototype.getLast=function(f){return this.substring(this.lastIndexOf(f) + 1, str.length);};
-Array.prototype.unique=function(){
-	var r = [];var obj = {};
-	for (var i=0,l=this.length; i<l; i++) {
-		var item=this[i];
-        if (!obj[item]) {
-			r.push(item);
-            obj[item] = 1;
-		}
-	}
-    return r;
-};
 Element.prototype.del=function(){this.parentNode.removeChild(this)};
 Element.prototype.first=function(){return this.firstElementChild ? this.firstElementChild : this.firstChild};
 Element.prototype.last=function(){return this.lastElementChild ? this.lastElementChild : this.lastChild};
 Element.prototype.setCenter=function(){
 	this.style.left=(document.documentElement.clientWidth-this.offsetWidth) / 2+"px";
 	this.style.top=(document.documentElement.clientHeight-this.offsetHeight) / 2+"px";
-};
-Element.prototype.getNext=function(){
-	if(!this.nextSibling) return null;  
-	var nextNode = this.nextSibling;  
-	if(nextNode.nodeType == 1){  
-		return nextNode;  
-	}
-	return this.getNext(this.nextSibling);  
-};
-Element.prototype.getPre=function(){
-	if(!this.previousSibling) return null;  
-	var preNode = this.previousSibling;  
-	if(preNode.nodeType == 1){  
-		return preNode;  
-	}
-	return this.getPre(this.previousSibling);  
 };
 Element.prototype.prev=function(){return this.previousElementSibling||this.previousSibling;}
 Element.prototype.next=function(){return this.nextElementSibling||this.nextSibling;}
