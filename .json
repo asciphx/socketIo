@@ -1,0 +1,20 @@
+{
+    "apps":
+    {
+      "name": "io",
+      "cwd": "./",
+      "script": "server.js",
+      "ignore_watch": [
+        "node_modules",
+        ".vscode"
+      ],
+      "instances": "max",
+      "min_uptime": "30s",
+      "max_restarts": 30,
+      "exec_mode" : "cluster_mode",
+      "error_file" : "./.vscode/test-err.log",
+      "out_file": "./.vscode/test-out.log",
+      "pid_file": "./.vscode/test.pid",
+      "watch": false
+    }
+  }

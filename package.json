@@ -5,7 +5,8 @@
   "description": "socketweb",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "pm2":"pm2 start .json"
   },
   "author": "Asciphx",
   "license": "ISC",
