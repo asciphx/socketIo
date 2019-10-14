@@ -9,7 +9,6 @@ ol,ul {list-style:none}caption,th {text-align:left}h1,h2,h3,h4,h5,h6{font-weight
 .wbk .lshow{position:absolute;height:181px;border-top:1px solid #ccc;padding-top:5px;display:block}
 .wbk .lhide{position:absolute;height:181px;border-top:1px solid #ccc;padding-top:5px;display:none}
 .wbk .inner{background-color:#FFF;width:10px;height:10px;position:absolute;top:179px;left:245px;transform:rotate(45deg);border-right:1px #ddd solid;border-top:1px #ddd solid}
-/*修改的是文件上传的按钮的样式*/
 .wbk div::-webkit-scrollbar{width:5px;height:6px}
 .wbk div::-webkit-scrollbar-track{background:#f6f6f6;border-radius:2px;}
 .wbk div::-webkit-scrollbar-thumb{background:#aaa;border-radius:2px;}
@@ -23,7 +22,6 @@ ol,ul {list-style:none}caption,th {text-align:left}h1,h2,h3,h4,h5,h6{font-weight
     width:240px;
     cursor:pointer;
     color:#888;
-   /* background:#fafafa;*/
     border:1px solid #ddd;
     border-radius:4px;
     overflow:hidden;
@@ -90,7 +88,7 @@ ol,ul {list-style:none}caption,th {text-align:left}h1,h2,h3,h4,h5,h6{font-weight
     background: #fff;
     border: #333 1px solid;
     padding: 2px 4px 0;
-    width: 400px;
+    width: 430px;
     height: 350px;
     cursor: text;
 }
