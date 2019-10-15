@@ -37,11 +37,10 @@ function listParse(parent, v, b) {
         var li = document.createElement("li"); li.innerHTML = v[i];
         li.style = "background:#fff;border:1px solid #ccc";
         if (b) {
-            b = v[i];
             li.addEventListener("dblclick", function () {
-                if ('room'.Id().innerHTML === "") so.emit("create or join", b)
+                if ('room'.Id().innerHTML === "") so.emit("create or join", this)
                 else alert("你已经在一个房间了！")
-            })
+            }.bind(v[i]))
         }
         li.addIn(parent);
     }

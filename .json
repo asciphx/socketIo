@@ -3,7 +3,7 @@
     {
       "name": "io",
       "cwd": "./",
-      "script": "server.js",
+      "script": "app.js",
       "ignore_watch": [
         "node_modules",
         ".vscode"
