@@ -20,29 +20,31 @@ function delOne(list, v) {
         }
     }
 }
+//b.a===false默认降序打印,b.b===false默认不绑定dblclick
 function objParse(parent, v, b) {
     var li = document.createElement("li"); li.innerHTML = v;
     li.style = "background:#fff;border:1px solid #ccc";
-    if (b)
+    if (b&&b.b)
         li.addEventListener("dblclick", function () {
             if ('room'.Id().innerHTML === "") so.emit("create or join", v)
             else alert("你已经在一个房间了！")
         })
-    li.addIn(parent.Id());
-
+    if (b && b.a)li.addEn(parent.Id())
+    else li.addIn(parent.Id());
 }
 function listParse(parent, v, b) {
     parent = parent.Id(); parent.innerHTML = "";
     for (i in v) {
         var li = document.createElement("li"); li.innerHTML = v[i];
         li.style = "background:#fff;border:1px solid #ccc";
-        if (b) {
+        if (b&&b.b) {
             li.addEventListener("dblclick", function () {
                 if ('room'.Id().innerHTML === "") so.emit("create or join", this)
                 else alert("你已经在一个房间了！")
             }.bind(v[i]))
         }
-        li.addIn(parent);
+        if (b && b.a) li.addEn(parent)
+        else li.addIn(parent);
     }
 }
 function handleFiles(files) {

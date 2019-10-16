@@ -1,0 +1,70 @@
+@import 'nib'
+
+global-reset()
+
+*
+  box-sizing: border-box
+
+html, body
+  height: 100%
+
+body
+  background-color: hsl(152, 40, 45)
+  color: #333
+  font-family: 'Open Sans', sans-serif
+  user-select: none
+  overflow: hidden
+  text-size-adjust: 100%
+
+#container
+  position: absolute
+  top: calc(50% + 1.5rem)
+  left: 50%
+  transform: translate3d(-50%, -50%, 0)
+
+#topbar
+  position: fixed
+  top: 0
+  left: 0
+  width: 100%
+  background-color: hsl(152, 40, 25)
+  padding: .25rem
+  text-align: center
+
+  button
+    background: none
+    border: 1px solid #fff
+    outline: none
+    margin: .25rem
+    padding: .5rem
+    font: inherit
+    font-size: .875rem
+    color: #fff
+    cursor: pointer
+
+    &:hover
+      background-color: #fff
+      color: #444
+
+.message
+  position: fixed
+  bottom: 0
+  left: 0
+  width: 100%
+  padding: 1rem .5rem
+  font-size: .5rem
+  text-align: center
+
+@import 'card'
+
+@media (max-width: 540px)
+  #topbar
+    text-align: left
+
+  .gh-ribbon
+    transform: scale(.5)
+    transform-origin: 100% 0
+
+@media (min-width: 800px)
+  html
+    font-size: 125%

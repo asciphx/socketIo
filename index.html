@@ -3,12 +3,36 @@
 <head>
 	<link rel="shortcut icon" href="#" /><title>GETH</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="stylesheet" href="imageAuthor.css">
+  <link rel="stylesheet" href="css/imageAuthor.css"><link rel="stylesheet" type="text/css" href="css/normalize.css" />
+  <link rel="stylesheet" type="text/css" href="css/default.css"><link href="css/example.css" rel="stylesheet">
 	<script type="text/javascript" language="javascript" src="js/jquery.js"></script>
 	<script type="text/javascript" language="javascript" src="js/json2.js"></script>
   <script type="text/javascript" language="javascript" src="js/socket-web.js"></script>
+  <style></style>
 </head>
-<body>
+<body style="background: url('img/加载游戏背景.png') no-repeat fixed;">
+  <div id="dragRoom" class="dragRoom" style="width:1200px;height: 660px;z-index: 3;">
+    <div class="title" style="cursor: move;"><h2></h2>
+      <div>
+        <a href="javascript:;" title="关闭"onclick="so.emit('leaveRoom','room'.Id().innerHTML)">✖</a>
+      </div>
+    </div>
+    <div class="dragRoomHead">
+      <div style="width:160px;float: left;">
+        <div style="height: 160px;margin-top: 3px;background: url('img/头像底框.png') no-repeat;background-size: cover;border-bottom: #ccc 1px solid;">
+          <img src="img/主题文字.png" width=100%;>
+        </div>
+        <div style="height: 465px;width:158px;background: lavender;box-shadow:1px 1px 1px 2px #5D7">
+          <ul id="roomTable"></ul>
+        </div>
+      </div><div style="width:100%;float: left;padding-left:5px;width: 86%;height: 100%;">
+        <article class="zzsc-container">
+          <div id="container"></div>
+          <div id="topbar"></div>
+        </article>
+      </div>
+    </div>
+  </div>
 	<div style="float: left;height:425px;display:flex;">
 		<div>
 			<p>url:<code id="url">...</code> 房间名: <code id="room"></code></p>
@@ -53,73 +77,66 @@
     </div>
 	</div>
 </body>
-<script>
-
-	var oText = $("div[name='text']"),data= { d: "all" }, onlinePerson= 'onlinePerson'.Id();
+<script>var so = io.connect("ws://127.0.0.1:2013/");
+	var $oText = $("div[name='text']"),$data= { d: "all" },$bool=false,onlinePerson= 'onlinePerson'.Id();
 	//发送消息的按钮，传送给服务器的某个房间
 	$("input[type='button'][name='btn']").on('click', function () {
 		if ("condition".Id().value === "del") 'room'.Id().innerHTML = ""
-		data.v="url".Id().innerHTML.substr(0,5)+":= "+oText.html();data.d= 'condition'.Id().value;
-    if('room'.Id().innerHTML) data.r = "room".Id().innerHTML
+		$data.v="url".Id().innerHTML.substr(0,5)+":= "+$oText.html();$data.d= 'condition'.Id().value;
+    if('room'.Id().innerHTML) $data.r = "room".Id().innerHTML
     switch('xuan'.Id().value){
-      case "message": so.send(data) ; break;
-      case "create or join": so.emit("create or join", oText.html().substr(0, 10)) ; break;
+      case "message": so.send($data) ; break;
+      case "create or join": so.emit("create or join", $oText.html().substr(0, 10)) ; break;
       case "leaveRoom": so.emit("leaveRoom", 'room'.Id().innerHTML); break;
       default: so.emit(String('xuan'.Id().value));
     }
 
-		if (!oText.html()) return;
-		oText.html("");
+		if (!$oText.html()) return;
+		$oText.html("");
 	})
-
-
-	var so = io.connect("ws://127.0.0.1:2013/");
 	//连入主网时候，主网会分配一个url作为客户端的id
   so.on("login", function (v) {
-    'url'.Id().innerHTML = v; data.id=v;so.emit("IPv4");
+    'url'.Id().innerHTML = v; $data.id=v;so.emit("IPv4");
     so.emit("getUsers",true);//加入true表示通知其他玩家，不加入是刷新用户列表按钮
   })
   so.on("getUsers", function (v,num) {listParse('usersList',v); onlinePerson.innerHTML=num;})
-
   //接收其他玩家进入主网的信息
   so.on("userCome",function(v,num){ onlinePerson.innerHTML = num;objParse('usersList', v);})
-	//接收消息
 	so.on("message", function (mes) {
     console.log(mes.v)
     objParse('viewlist', mes.v)
 	});
 	//加入房间
-	so.on("joined", function (id,room) {
-    if (id === 'url'.Id().innerHTML)'roomTable'.Id().innerHTML = "";
-    'room'.Id().innerHTML = room;
-    var list='roomTable'.Id().childNodes
-    for(i in list){if(list[i].innerHTML === id) return false;}
-    objParse('roomTable', id);  
+	so.on("joined", function (id,room) {'room'.Id().innerHTML = room;
+    'dragRoom'.Id().setCenter(); 'dragRoom'.Id().getElementsByClassName('title')[0].firstChild.innerHTML=room;
+    objParse('roomTable', id,{ a: true }); deck.intro(); deck.shuffle(); deck.shuffle()
+    'roomTable'.Id().firstChild.style.color="red"//房主需要设置红色
   })
   so.on("getRooms",function (v){
-    listParse('roomList', v,true)
+    listParse('roomList', v, { b: true })
   })
   so.on("getRoomPlayers", function (v) {
     'roomTable'.Id().innerHTML="";
-    listParse('roomTable', v);
+    listParse('roomTable', v, { a: true });
   })
   so.on("playerCome", function (v) {
-    objParse('roomTable', v)
+    objParse('roomTable', v, { a: true });  
   })
   so.on("ready", function () {
     console.log("所有人都就位了。")
   })
   so.on("leaveRoom",function(v,id){
     if("url".Id().innerHTML===id){
+      'dragRoom'.Id().style.left = 'dragRoom'.Id().style.top = "-100%";
       "room".Id().innerHTML="roomTable".Id().innerHTML = ""
     }else{
-      objParse('viewlist', id + "离开了:" + v);
-      delOne("roomTable".Id().childNodes, id)
+      objParse('viewlist', id + "离开了:" + v);delOne("roomTable".Id().childNodes, id);
+      if ('roomTable'.Id().firstChild.style.color !== "red")'roomTable'.Id().firstChild.style.color = "red";
     }
   })
 	//创建房间
   so.on("created", function (v) {
-    objParse('roomList', v, true);
+    objParse('roomList', v, { b: true });
   })
   so.on("destroyRoom",function(v){
       delOne("roomList".Id().childNodes, v)
@@ -133,7 +150,7 @@
   so.on("IPv4",function(v){
     'IPv4'.Id().innerHTML=v;
   })
-  so.on("disconnect",function(){
+  so.on("disconnect",function(){'dragRoom'.Id().style.left = 'dragRoom'.Id().style.top = "-100%";
     'room'.Id().innerHTML ='roomList'.Id().innerHTML = 'roomTable'.Id().innerHTML ='usersList'.Id().innerHTML =onlinePerson.innerHTML =""
   })
   so.on("exit",function(v,b){
@@ -142,5 +159,7 @@
     if(b)so.emit('getRooms');//如果有人退出的房间一个人都没有，会重新获取一次房间
 
   })
+  
 </script><script type="text/javascript" language="javascript" src="js/api.js"></script>
+<script src="js/deck.js"></script><script src="js/example.js"></script>
 </html>
