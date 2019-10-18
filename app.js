@@ -6,16 +6,12 @@ const fileServer = new(s.Server)(),app = h.createServer((req, res)=>{
 const io = socketIO.listen(app);
 let rooms = new Array(), userNum = 0;
 io.sockets.on('connection', socket => {
-  // if (io.sockets.connected[socket.id]) {
-  //   _.findWhere(io.sockets.sockets, { id: socket.id }).emit('login', socket.id);
-  // }
   socket.emit('login', socket.id);
   socket.on('message', mes => {
     console.log(mes)
     switch (mes.d){
       case "all":mes.r ? io.to(mes.r).emit("message", mes) : io.emit("message", mes);break
-      case "del":const player = _.findWhere(io.sockets.sockets, { id: mes.id });
-          player && (mes.r ? player.leave(mes.r) : player.disconnect(true)) ;break
+      case "del":mes.r ? socket.leave(mes.r) : socket.disconnect(true) ;break
       default: mes.r ? socket.broadcast.to(mes.r).emit('message', mes):socket.broadcast.emit('message', mes)
     }
   });
@@ -31,12 +27,12 @@ io.sockets.on('connection', socket => {
       });
       rooms.push(obj); 
       socket.emit('joined', socket.id, room )
-    } else if (num.length < 3) {
+    } else if (num.length < 4) {
       rooms[rooms.findIndex(v => Object.keys(v)[0] === room)][room].push(socket.id)
       socket.emit('getRoomPlayers', Object.keys(num.sockets));
       socket.join(room); socket.emit('joined', socket.id, room)
       socket.broadcast.to(room).emit('playerCome', socket.id )
-      if (num.length === 3)io.sockets.in(room).emit('ready')
+      if (num.length === 4)io.sockets.in(room).emit('ready')
     }else {
       socket.emit('full', room);
     }
@@ -84,4 +80,34 @@ io.sockets.on('connection', socket => {
     } else socket.broadcast.to(room).emit("leaveRoom", room, socket.id)
     socket.broadcast.emit('exit', socket.id)
   });
+  socket.on("shuffle", (room, arr) => {
+    var rnd, temp;
+    for (i in arr) {
+      rnd = Math.random() * i | 0;
+      temp = arr[i];
+      arr[i] = arr[rnd];
+      arr[rnd] = temp;
+    }
+    io.to(room).emit("shuffle", arr)
+  })
+  socket.on("intro", room => {
+    io.to(room).emit("intro")
+  })
+  socket.on("bysuit", room => {
+    io.to(room).emit("bysuit")
+  })
+  socket.on("poker", room => {
+    io.to(room).emit("poker")
+  })
+  socket.on("fan", room => {
+    io.to(room).emit("fan")
+  })
+  socket.on("sort", room => {
+    io.to(room).emit("sort")
+  })
 });
+exports.delUser = function (id){
+  if (io.sockets.connected[id]) {
+    _.findWhere(io.sockets.sockets, { id: id }).disconnect(true);
+  }
+}

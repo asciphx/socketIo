@@ -11,157 +11,98 @@ var translate = Deck.translate
 var $container = document.getElementById('container')
 var $topbar = document.getElementById('topbar')
 
+var $start = document.createElement('button')
 var $intro = document.createElement('button')
-var $sort = document.createElement('button')
 var $shuffle = document.createElement('button')
 var $bysuit = document.createElement('button')
-var $fan = document.createElement('button')
 var $poker = document.createElement('button')
-
+var $fan = document.createElement('button')
+var $sort = document.createElement('button')
+$start.textContent = '开始'
 $intro.textContent = '空降'
 $shuffle.textContent = '洗牌'
-$poker.textContent = '发牌'
+$bysuit.textContent = '发牌'
+$poker.textContent = '抽牌'
 $fan.textContent = '扇形'
-$bysuit.textContent = '展开'
 $sort.textContent = '顺序'
-
+$topbar.appendChild($start)
 $topbar.appendChild($intro)
 $topbar.appendChild($shuffle)
+$topbar.appendChild($bysuit)
 $topbar.appendChild($poker)
 $topbar.appendChild($fan)
-$topbar.appendChild($bysuit)
 $topbar.appendChild($sort)
-
-var deck = Deck(true)
-
-
 // easter eggs start
-
-
-var acesClicked = []
-var kingsClicked = []
-
-deck.cards.forEach(function (card, i) {
-  card.enableMoving()
-
-  card.$el.addEventListener('mousedown', onTouch)
-  card.$el.addEventListener('touchstart', onTouch)
-
-  function onTouch () {
-    var card
-
-    if (i % 13 === 0) {
-      acesClicked[i] = true
-      if (acesClicked.filter(function (ace) {
-        return ace
-      }).length === 4) {
-        document.body.removeChild($topbar)
-        deck.$el.style.display = 'none'
-        setTimeout(function () {
-          startWinning()
-        }, 250)
-      }
-    } else if (i % 13 === 12) {
-      if (!kingsClicked) {
-        return
-      }
-      kingsClicked[i] = true
-      if (kingsClicked.filter(function (king) {
-        return king
-      }).length === 4) {
-        for (var j = 0; j < 3; j++) {
-          card = Deck.Card(52 + j)
-          card.mount(deck.$el)
-          card.$el.style[transform] = 'scale(0)'
-          card.enableMoving()
-          deck.cards.push(card)
-        }
-        deck.sort(true)
-        kingsClicked = false
-      }
-    } else {
-      acesClicked = []
-      kingsClicked = []
-    }
-  }
-})
-
-function startWinning () {
-  var $winningDeck = document.createElement('div')
-  $winningDeck.classList.add('deck')
-
-  $winningDeck.style[transform] = translate(Math.random() * window.innerWidth - window.innerWidth / 2 + 'px', Math.random() * window.innerHeight - window.innerHeight / 2 + 'px')
-
-  $container.appendChild($winningDeck)
-
-  for (var i = 0; i < 52; i++) {
-    addWinningCard($winningDeck, i)
-  }
-  setTimeout(startWinning, 500)
-}
-
-function addWinningCard ($deck, i) {
-  var card = Deck.Card(i)
-  var delay = (52 - i) * 20
-
-  var $xMovement = document.createElement('div')
-  $xMovement.style.position = 'absolute'
-  $xMovement.style[transform] = translate(0, 0)
-
-  card.$el.style[boxShadow] = 'none'
-
-  card.mount($xMovement)
-  $deck.appendChild($xMovement)
-
-  card.$el.style[transform] = translate(0, 0)
-
-  setTimeout(function () {
-    $xMovement.style[transition] = 'all 1s linear'
-    $xMovement.style[transitionDelay] = delay / 1000 + 's'
-
-    card.$el.style[transition] = 'all 1s ' + easing('cubicInOut')
-    card.$el.style[transitionDelay] = delay / 1000 + 's'
-
-    $xMovement.style[transform] = translate('-500px', 0)
-    card.$el.style[transform] = translate(0, '500px')
-  }, 0)
-  setTimeout(function () {
-    card.unmount()
-  }, 1000 + delay)
-}
-
-
+var array
+var containJoker = false, idex;
 // easter eggs end
-
-
+//Deck(true)为54张，默认为52张
+var deck = Deck(containJoker);
+$start.addEventListener('click', function () {
+  if ($ready===false){alert('请等待所有人到位!');return;}
+  containJoker ? idex = 54 : idex = 52
+  array = [0]; for (i = idex; --i;) array.push(i);
+  $start.innerHTML = "已准备"; $start.style.color = "blue";
+  $start.disabled = true;
+})
 $shuffle.addEventListener('click', function () {
-  deck.shuffle()
-  deck.shuffle()
+  if ($start.disabled) so.emit('shuffle', "room".Id().innerHTML, array);
 })
 $sort.addEventListener('click', function () {
-  deck.sort()
+  if ($start.disabled) so.emit('sort', "room".Id().innerHTML)
 })
 $bysuit.addEventListener('click', function () {
-  deck.sort(true)
-  deck.bysuit()
+  if ($start.disabled) so.emit('bysuit', "room".Id().innerHTML)
 })
 $fan.addEventListener('click', function () {
-  deck.fan()
+  if ($start.disabled) so.emit('fan', "room".Id().innerHTML)
 })
 $intro.addEventListener('click', function () {
-  deck.intro()
+  if ($start.disabled) so.emit('intro', "room".Id().innerHTML)
 })
 $poker.addEventListener('click', function () {
+  if ($start.disabled) so.emit('poker', "room".Id().innerHTML)
+})
+// secret message..
+so.on("intro", function () {
+  deck.intro()
+})
+so.on("shuffle", function (v) {
+  array = v;
+  deck.shuffle(flushFrist(deck.cards));
+  sortFrist(deck.cards);
+  deck.shuffle(deck.flushArray(array))
+})
+so.on("bysuit", function () {
+  deck.bysuit()
+})
+so.on("poker", function () {
   deck.poker()
 })
-
-deck.mount($container)
-deck.shuffle()
-
-
-// secret message..
-
-
+so.on("fan", function () {
+  deck.fan()
+})
+so.on("sort", function () {
+  deck.sort(true)
+})
+//假的洗牌效果模拟第一次的，第二次洗牌为后端真实数据
+function flushFrist(arr) {
+  var rnd, temp;
+  for (i in arr) {
+    rnd = Math.random() * i | 0;
+    temp = arr[i];
+    arr[i] = arr[rnd];
+    arr[rnd] = temp;
+  }
+  return arr;
+}
+function sortFrist(arr){
+  arr.sort(function (a, b) {
+    return a.i - b.i;
+  });
+  return arr;
+}
+//…………
 var randomDelay = 10000 + 60000 * Math.random()
 
 setTimeout(function () {
@@ -176,7 +117,7 @@ setTimeout(function () {
   printMessage('...have fun ;)')
 }, randomDelay + 10000)
 
-function printMessage (text) {
+function printMessage(text) {
   var $message = document.createElement('p')
   $message.classList.add('message')
   $message.textContent = text

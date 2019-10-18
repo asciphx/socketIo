@@ -2,7 +2,6 @@
 
 var Deck = (function () {
   'use strict';
-
   var style = document.createElement('p').style;
   var memoized = {};
 
@@ -62,16 +61,12 @@ var Deck = (function () {
         x: (i - 2.05) * 110,
         y: -125
       };
-
       setTimeout(function () {
         $el.style.zIndex = len - 1 + i;
-      }, delay);
-
-      setTimeout(function () {
         $el.style[transition] = 'all .25s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
         $el.style[transform] = translate(target.x + '%', target.y + '%');
-      }, delay + 25);
-
+        $el.style[transitionDelay] = '250';
+      }, delay);
       setTimeout(function () {
         $el.style[transition] = '';
         cb(i);
@@ -91,18 +86,15 @@ var Deck = (function () {
       var rot = i / (len - 1) * 260 - 130;
 
       $el.style[transformOrigin] = '50% 110%';
+      $el.style[transition] = 'all .3s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
+      $el.style[transitionDelay] = delay / 1000 + 's';
+      $el.style[transform] = translate(-z + 'px', -z + 'px');
+      $el.style.zIndex = i;
 
       setTimeout(function () {
-        $el.style[transition] = 'all .3s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
-        $el.style[transitionDelay] = delay / 1000 + 's';
-        $el.style[transform] = translate(-z + 'px', -z + 'px');
-        $el.style.zIndex = i;
-
-        setTimeout(function () {
-          $el.style[transitionDelay] = '';
-          $el.style[transform] = translate(0, 0) + 'rotate(' + rot + 'deg)';
-        }, 300 + delay);
-      }, 0);
+        $el.style[transitionDelay] = '';
+        $el.style[transform] = translate(0, 0) + 'rotate(' + rot + 'deg)';
+      }, 300 + delay);
 
       setTimeout(function () {
         cb(i);
@@ -114,15 +106,10 @@ var Deck = (function () {
     var transform = prefix('transform');
     var transition = prefix('transition');
     var transitionDelay = prefix('transitionDelay');
-
-    var value = card.value;
-    var suit = card.suit;
-
-    card.bysuit = function (cb) {
-      var i = card.i;
+    card.bysuit = function (i, cb) {
       var delay = i * 10;
-      var posX = -(6.75 - value) * 15;
-      var posY = -(1.5 - suit) * 105;
+      var posX = -(3.75 - i % 13 + 1) * 13;
+      var posY = -(1.5 - (i / 13 | 0)) * 105;
 
       setTimeout(function () {
         $el.style[transition] = 'all .5s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
@@ -149,15 +136,10 @@ var Deck = (function () {
       setTimeout(function () {
         $el.style[transition] = 'all .4s cubic-bezier(0.645, 0.045, 0.355, 1.000)';
         $el.style[transform] = translate(-z + 'px', '-150%');
-      }, delay);
-
-      setTimeout(function () {
         $el.style.zIndex = n;
-      }, 200 + delay);
-
+      }, delay);
       setTimeout(function () {
         $el.style[transform] = translate(-z + 'px', -z + 'px');
-
         setTimeout(function () {
           $el.style[transition] = '';
           card.x = -z;
@@ -179,8 +161,7 @@ var Deck = (function () {
     var transition = prefix('transition');
     var transitionDelay = prefix('transitionDelay');
 
-    card.shuffle = function (cb) {
-      var i = card.pos;
+    card.shuffle = function (i, cb) {
       var z = i / 4;
       var offsetX = plusMinus(Math.random() * 40 + 30);
       var delay = i * 2;
@@ -240,17 +221,13 @@ var Deck = (function () {
     return document.createElement(type);
   }
 
-  var maxZ = 52;
+  var maxZ = 52;//鼠标点击的时候设置zIndex为maxZ++.
 
   function Card(i) {
-    var transition = prefix('transition');
-    var transform = prefix('transform');
-
-    var value = i % 13 + 1;
-    var name = value === 1 ? 'A' : value === 11 ? 'J' : value === 12 ? 'Q' : value === 13 ? 'K' : value;
-    var suit = i / 13 | 0;
-    var suitName = SuitName(suit);
-    var z = (52 - i) / 4;
+    var transition = prefix('transition'), transform = prefix('transform');
+    var value = i % 13 + 1, name = value === 1 ? 'A' : value === 11 ? 'J' : value === 12 ? 'Q' : value === 13 ? 'K' : value;
+    var suit = i / 13 | 0, suitName = SuitName(suit);
+    var z = (52 - i) / 4, num = value === 1 ? 14 : value === 2 ? 15 : value;
 
     var $el = createElement('div');
     var $topleft = createElement('div');
@@ -258,10 +235,10 @@ var Deck = (function () {
     var $face = createElement('div');
 
     var isMovable = false;
+    //num大小数值，card卡片名字，{val: num+""+suit , card: suitName + name}
+    var self = { i: i, $el: $el, mount: mount, unmount: unmount };
 
-    var self = { i: i, value: value, suit: suit, pos: i, $el: $el, mount: mount, unmount: unmount };
-
-    $el.classList.add('card', suitName, suitName + value);
+    $el.classList.add('card', suitName + value);
     $topleft.classList.add('topleft');
     $bottomright.classList.add('bottomright');
     $face.classList.add('face');
@@ -270,7 +247,7 @@ var Deck = (function () {
     $bottomright.textContent = suit < 4 ? name : 'J\nO\nK\nE\nR';
 
     $el.style.zIndex = 52 - i;
-    $el.style[transform] = 'translate(-' + z + 'px, -' + z + 'px)';
+    $el.style[transform] = 'translate(' + z + 'px, -' + z + 'px)';
 
     $el.appendChild($face);
     $el.appendChild($topleft);
@@ -366,7 +343,7 @@ var Deck = (function () {
   }
 
   function SuitName(value) {
-    return value === 0 ? 'spades' : value === 1 ? 'hearts' : value === 2 ? 'clubs' : value === 3 ? 'diamonds' : 'joker';
+    return value === 3 ? 'spades' : value === 2 ? 'hearts' : value === 1 ? 'clubs' : value === 0 ? 'diamonds' : 'joker';
   }
 
   function addListener(target, name, listener) {
@@ -405,8 +382,8 @@ var Deck = (function () {
     function bysuit(next) {
       var cards = deck.cards;
 
-      cards.forEach(function (card) {
-        card.bysuit(function (i) {
+      cards.forEach(function (card, i) {
+        card.bysuit(i, function (i) {
           if (i === cards.length - 1) {
             next();
           }
@@ -472,57 +449,33 @@ var Deck = (function () {
       });
     }
   }
-
-  function fisherYates(array) {
-    var rnd, temp;
-
-    for (var i = array.length - 1; i; i--) {
-      rnd = Math.random() * i | 0;
-      temp = array[i];
-      array[i] = array[rnd];
-      array[rnd] = temp;
-    }
-
-    return array;
-  }
-
+  //deck.suffle(deck.cards)
   function shuffleModule(deck) {
-
     deck.shuffle = deck.queued(shuffle);
-
     function shuffle(next) {
-      var cards = deck.cards;
-
-      fisherYates(cards);
-
-      cards.forEach(function (card, i) {
-        card.pos = i;
-
-        card.shuffle(function (i) {
+      var cards = arguments;
+      for (var i = 1, l = cards.length; i < l; i++) {
+        cards[i].shuffle(i, function (i) {
           if (i === cards.length - 1) {
             next();
           }
         });
-      });
+      }
       return;
     }
   }
 
   function queue(target) {
     var array = Array.prototype;
-
     var queueing = [];
-
     target.queue = queue;
     target.queued = queued;
-
     return target;
 
     function queued(action) {
       return function () {
         var self = this;
         var args = arguments;
-
         queue(function (next) {
           action.apply(self, array.concat.apply(next, args));
         });
@@ -609,10 +562,11 @@ var Deck = (function () {
   }
 
   function Deck(jokers) {
+    // console.log(arr)
     var cards = new Array(jokers ? 54 : 52);
-
+    // [0,……,51]
     var $el = createElement('div');
-    var self = observable({ mount: mount, unmount: unmount, cards: cards, $el: $el });
+    var self = observable({ mount: mount, unmount: unmount, cards: cards, flushArray: flushArray, $el: $el });
     var $root;
 
     queue(self);
@@ -624,21 +578,28 @@ var Deck = (function () {
     introModule(self);
 
     $el.classList.add('deck');
-
     var card;
-
     for (var i = 0, len = cards.length; i < len; i++) {
       card = cards[i] = Card(i);
       card.mount($el);
     }
 
     return self;
-
+    function flushArray(array) {
+      var list = deck.cards;
+      var rnd, temp;
+      for (var i = array.length - 1; i; i--) {
+        rnd = array[i];
+        temp = list[i];
+        list[i] = list[rnd];
+        list[rnd] = temp;
+      }
+      return list;
+    }
     function mount(root) {
       $root = root;
       $root.appendChild($el);
     }
-
     function unmount() {
       $root.removeChild($el);
     }
