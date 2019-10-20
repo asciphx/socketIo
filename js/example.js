@@ -38,6 +38,9 @@ var containJoker = false, idex;
 // easter eggs end
 //Deck(true)为54张，默认为52张
 var deck = Deck(containJoker);
+deck.cards.forEach(function (card, i) {
+  card.enableMoving()
+})
 $start.addEventListener('click', function () {
   if ($ready===false){alert('请等待所有人到位!');return;}
   containJoker ? idex = 54 : idex = 52
