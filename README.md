@@ -1,18 +1,18 @@
-#SocketIo
+# SocketIo
 
 You need to be familiar with the use of socketio.
 
-##BugFix
+## BugFix
 
 Latest update: room group contains room information and room contains user information.
 
 When the user loses the connection, only push the user out of the room.
 
-##In particular
+## In particular
 
 I will integrate and give the complete demo.
 
-##A brief introduction to
+## A brief introduction to
 
 Preparation: NPM I
 
