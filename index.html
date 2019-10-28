@@ -91,7 +91,7 @@
     </div>
   </div>
 </body>
-<script>var so = io.connect("ws:"+ window.location.origin.replace(/http:/, ''));var $ready=false;
+<script>var so = io.connect("ws:"+ window.location.origin.replace(/http:/, ''));var $ready=false, $timer;
   var $oText = $("div[name='text']"), $data = { d: "all" }, $bool = false, onlinePerson = 'onlinePerson'.Id();
   //发送消息的按钮，传送给服务器的某个房间
   $("input[type='button'][name='btn']").on('click', function () {
@@ -113,7 +113,12 @@
     'url'.Id().innerHTML = v; $data.id = v; so.emit("IPv4");
     so.emit("getUsers", true);//加入true表示通知其他玩家，不加入是刷新用户列表按钮
   })
-  so.on("getUsers", function (v, num) { listParse('usersList', v); onlinePerson.innerHTML = num; })
+  so.on("getUsers", function (v, num) { listParse('usersList', v); onlinePerson.innerHTML = num; 
+    if ($timer) clearTimeout($timer);
+    $timer = setTimeout(function () {
+      if ('usersList'.Id().childNodes.length !== num) { 'usersList'.Id().innerHTML = ''; so.emit('getUsers') }
+    }, 2500)
+  })
   //接收其他玩家进入主网的信息
   so.on("userCome", function (v, num) { onlinePerson.innerHTML = num; objParse('usersList', v); })
   so.on("message", function (mes) {

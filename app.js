@@ -4,9 +4,9 @@ const fileServer = new(s.Server)(),app = h.createServer((req, res)=>{
   fileServer.serve(req, res);
 }).listen(2013, () => { console.log(`Server running at http://127.0.0.1:2013/`); });
 const io = socketIO.listen(app);
-let rooms = new Array(), userNum = 0;
+let rooms = new Array(), userNum = 0,users = {}
 io.sockets.on('connection', socket => {
-  socket.emit('login', socket.id);
+  socket.emit('login', socket.id);userNum++; users[socket.id]=1;
   socket.on('message', mes => {
     console.log(mes)
     switch (mes.d){
@@ -52,12 +52,9 @@ io.sockets.on('connection', socket => {
     rooms.forEach(v=>{list.push(Object.keys(v)[0])})
     socket.emit("getRooms", list )
   })
-  socket.on("getUsers", bool => {let users = [];
-    for (i in io.nsps['/'].adapter.rooms){
-      if (i.length === 20) users.push(i)
-    }; userNum = users.length
+  socket.on("getUsers", bool => {
     if (bool) socket.broadcast.emit('userCome', socket.id, userNum)
-    socket.emit("getUsers", users, userNum);
+    socket.emit("getUsers", Object.keys(users), userNum);
   })
   socket.on('IPv4', () => {
     var ifaces = o.networkInterfaces();
@@ -69,7 +66,7 @@ io.sockets.on('connection', socket => {
       });
     }
   });
-  socket.on("disconnect", () => {
+  socket.on("disconnect", () => {userNum--;delete users[socket.id];
     const idex = rooms.findIndex(v => Object.entries(v)[0][1].toString().indexOf(socket.id) > -1)
     if (idex === -1) { socket.broadcast.emit('exit', socket.id); return; } 
     const room = Object.keys(rooms[idex])[0];
