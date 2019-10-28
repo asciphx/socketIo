@@ -1,23 +1,25 @@
-# SocketIo
+#SocketIo
 
-需要熟悉 socketIo 的使用。
+You need to be familiar with the use of socketio.
 
-## BugFix
+##BugFix
 
-最近更新：房间组里面包含房间信息，房间包含用户信息。
-当用户失去连接，仅给用户所在房间推送用户离开房间。
+Latest update: room group contains room information and room contains user information.
 
-## 特别地
+When the user loses the connection, only push the user out of the room.
 
-由本人整合，并且给出完整demo
+##In particular
 
-## 概述
+I will integrate and give the complete demo.
 
-准备：npm i
+##A brief introduction to
 
-开发环境用：npm start
+Preparation: NPM I
 
-正式环境需要pm2支持
-部署用:npm run pm2
+NPM start for development environment
 
-注意，www文件是老版本的，仅作为参考。
+Formal environment needs PM2 support
+
+For deployment: NPM run PM2
+
+Note that the WWW document is an older version and is for reference only.
