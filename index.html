@@ -14,14 +14,15 @@
   <script type="text/javascript" language="javascript" src="js/socket-web.js"></script>
   <style></style>
 </head>
-
-<body style="background: url('img/加载游戏背景.png') no-repeat fixed;">
-  <div id="dragRoom" class="dragRoom" style="width:1200px;height: 660px;z-index: 3;">
-    <div class="title" style="cursor: move;">
-      <h2></h2>
-      <div>
-        <a href="javascript:;" title="关闭" onclick="so.emit('leaveRoom','room'.Id().innerHTML)">✖</a>
-      </div>
+<body style="background: url('img/加载游戏背景.png') no-repeat fixed;"><div id="shield"
+  style="display:none;position:absolute;left:0px;top:0px;width:100%;height:100%;background:rgb(51, 51, 51);opacity:0.3;text-align:center;z-index:1;">
+</div>
+  <div id="dragRoom"onmousedown="this.dragBox(event,'shield'.Id())"onmousemove=this.dashedBox(event)  class="dragRoom" style="width:1200px;height: 660px;z-index: 3;">
+    <header onload="this.p().setCenter()" onmousedown="this.moveBox(event,true,'shield'.Id())">代码整洁之道</header>
+    <div class="btns">
+      <em title="关闭"onclick="so.emit('leaveRoom','room'.Id().innerHTML)">✖</em>
+      <em title="最大化"onclick=this.innerHTML==="☐"?(this.innerHTML="❐",this.title="还原"):(this.innerHTML="☐",this.title="最大化")>☐</em>
+      <em title="最小化"onclick="">━</em>
     </div>
     <div class="dragRoomHead">
       <div style="width:160px;float: left;">
@@ -91,7 +92,7 @@
     </div>
   </div>
 </body>
-<script>var so = io.connect("ws:"+ window.location.origin.replace(/http:/, ''));var $ready=false, $timer;
+<script>var so = io.connect("ws:"+ window.location.origin.replace(/http:/, ''));var $ready=false, timer;
   var $oText = $("div[name='text']"), $data = { d: "all" }, $bool = false, onlinePerson = 'onlinePerson'.Id();
   //发送消息的按钮，传送给服务器的某个房间
   $("input[type='button'][name='btn']").on('click', function () {
@@ -113,9 +114,9 @@
     'url'.Id().innerHTML = v; $data.id = v; so.emit("IPv4");
     so.emit("getUsers", true);//加入true表示通知其他玩家，不加入是刷新用户列表按钮
   })
-  so.on("getUsers", function (v, num) { listParse('usersList', v); onlinePerson.innerHTML = num; 
-    if ($timer) clearTimeout($timer);
-    $timer = setTimeout(function () {
+  so.on("getUsers", function (v, num) { listParse('usersList', v); onlinePerson.innerHTML = num;
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(function () {
       if ('usersList'.Id().childNodes.length !== num) { 'usersList'.Id().innerHTML = ''; so.emit('getUsers') }
     }, 2500)
   })
@@ -128,7 +129,7 @@
   //加入房间
   so.on("joined", function (id, room) {
     'room'.Id().innerHTML = room;
-    'dragRoom'.Id().style.display = 'block'; 'dragRoom'.Id().getElementsByClassName('title')[0].firstChild.innerHTML = room;
+    'dragRoom'.Id().style.display = 'block'; 'dragRoom'.Id().childNodes[1].innerHTML = room;
     objParse('roomTable', id, { a: true }); 'dragRoom'.Id().setCenter();
     'roomTable'.Id().firstChild.style.color = "red"//房主需要设置红色
   })
@@ -150,7 +151,7 @@
       $start.innerHTML = "开始"; $start.style.color = "#eee";
       $start.disabled = false; deck.sort(true); $ready=false;
     if ("url".Id().innerHTML === id) {
-      'dragRoom'.Id().style.left = 'dragRoom'.Id().style.top = "-100%";
+      'dragRoom'.Id().style.display = "none";
       "room".Id().innerHTML = "roomTable".Id().innerHTML = "";
     } else {
       objParse('viewlist', id + "离开了:" + v); delOne("roomTable".Id().childNodes, id);

@@ -94,11 +94,10 @@ ol,ul {list-style:none}caption,th {text-align:left}h1,h2,h3,h4,h5,h6{font-weight
     height: 350px;
     cursor: text;
 }
-.dragRoom{position:absolute;top:-100%;left:-100%;width:365px;height:370px;background:#e9e9e9;border-radius:5px;box-shadow:0 1px 3px 2px #666;z-index:1;}
-.dragRoom .title{position:relative;height:27px;margin:2px;background: rgba(106, 100, 100, 0.2);}
-.dragRoom .title h2{box-shadow:0 1px 10px 1px #888;text-indent:5px;font-size:14px;height:25px;line-height:24px;border:1px solid transparent;}
-.dragRoom .title div{position:absolute;height:19px;top:1px;right:0;}
-.dragRoom .title a{text-decoration:none;color:currentColor;float:left;width:22px;height:19px;display:block;margin-left:5px;}
-.dragRoom .title a:hover{color:orangered}
+.dragRoom{position:absolute;width:365px;height:370px;background:#e9e9e9;border-radius:5px;box-shadow:0 1px 3px 2px #666;z-index:2;}
+.dragRoom header{cursor:move;position:absolute;z-index:2;margin:2px;width:100%;float:left;text-indent:5px;font-size:14px;height:25px;line-height:24px;border:1px solid transparent;}
+.dragRoom .btns{position:relative;height:27px;margin:2px;box-shadow:1px 1px 10px 1px #888;background:rgba(106,100,100,0.2);}
+.dragRoom .btns em{position:relative;z-index:2;top:2px;cursor:pointer;float:right;color:currentColor;width:22px;height:19px;margin-left:5px;}
+.dragRoom .btns em:hover{color:orangered;}
 .dragRoom .dragRoomHead {background: url('../img/桌布.png') no-repeat;position:relative;height:95%;margin:2px;}
 .dragRoom .dragRoomHead #roomTable li{white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
